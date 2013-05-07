@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HostsFiletoObjectConverterFixture.cs" />
+    <Compile Include="HostsFileWriterFixture.cs" />
     <Compile Include="RegistryAccessFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -27,6 +27,7 @@ namespace Simple.HostsManager
             {
                 var match = HostRowPattern.Match(hostEntry);
                 if (!match.Success) throw new FormatException();
+                if (hostEntry[0] == '#') throw new FormatException();
 
                 return new HostsEntry
                     {
@@ -54,7 +55,7 @@ namespace Simple.HostsManager
                 throw new Exception("Unable to parse invalid HostsEntry");
 
             var result = string.Format("{0}\t{1}\t",
-                                       (hostsEntry.IsEnabled() ? "" : "# ") + hostsEntry.IpAddress,
+                                       hostsEntry.IpAddress,
                                        HostNamesToString(hostsEntry.HostNames));
             if (!string.IsNullOrEmpty(hostsEntry.Comment)) result += "# " + hostsEntry.Comment;
             return result.Trim();

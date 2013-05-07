@@ -10,11 +10,6 @@ namespace Simple.HostsManager
         public List<string> HostNames { get; set; }
         public string Comment { get; set; }
 
-        public bool IsEnabled()
-        {
-            return IsValid() && HostNames[0] != "#";
-        }
-
         public bool IsValid()
         {
             return IpAddress != null && HostNames.Any();

@@ -1,16 +1,21 @@
-﻿using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Simple.HostsManager.Tests
 {
     [TestFixture]
     public class RegistryAccessFixture
     {
+        private readonly HostsFileAccess _hostsFileAccess;
+
+        public RegistryAccessFixture()
+        {
+            _hostsFileAccess = new HostsFileAccess();
+        }
+
         [Test]
         public void CanRetrieveHostsFilename()
         {
-            var hostsFileAccess = new HostsFileAccess();
-            var fileName = hostsFileAccess.GetFileName();
+            var fileName = _hostsFileAccess.GetFileName();
 
             Assert.IsNotNullOrEmpty(fileName);
         }
@@ -18,8 +23,7 @@ namespace Simple.HostsManager.Tests
         [Test]
         public void CanWritetoHostsFile()
         {
-            var hostsFileAccess = new HostsFileAccess();
-            var hasAccess = hostsFileAccess.HasWriteAccess();
+            var hasAccess = _hostsFileAccess.HasWriteAccess();
 
             Assert.IsTrue(hasAccess);
         }

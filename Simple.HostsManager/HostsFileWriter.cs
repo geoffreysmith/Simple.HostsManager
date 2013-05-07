@@ -6,11 +6,18 @@ namespace Simple.HostsManager
 {
     public class HostsFileWriter
     {
-        public void AppendLine(string input)
-        {
-            var hostsFileAccess = new HostsFileAccess();
+        private readonly HostsFileAccess _hostsFileAccess;
+        private readonly HostsFileToObjectConverter _hostsFileToObjectConverter;
 
-            var file = new FileStream(hostsFileAccess.GetFileName(), FileMode.Append, FileAccess.Write);
+        public HostsFileWriter()
+        {
+            _hostsFileAccess = new HostsFileAccess();
+            _hostsFileToObjectConverter = new HostsFileToObjectConverter();
+        }
+
+        private void AppendLine(string input)
+        {
+            var file = new FileStream(_hostsFileAccess.GetFileName(), FileMode.Append, FileAccess.Write);
             var writer = new StreamWriter(file, Encoding.Default);
             
             writer.WriteLine(Environment.NewLine + input);
@@ -18,12 +25,19 @@ namespace Simple.HostsManager
             writer.Close();
         }
 
+        public void AppendLine(HostsEntry hostsEntry)
+        {
+            if (!hostsEntry.IsValid())
+                throw new Exception("Cannot add invalid hosts entry");
+
+            var hostEntryString = _hostsFileToObjectConverter.ToString(hostsEntry);
+
+            AppendLine(hostEntryString);
+        }
+
         public void WriteHostsFile(string fileToWrite)
         {
-            var hostsFileAccess = new HostsFileAccess();
-
-            var file = new FileStream(hostsFileAccess.GetFileName(), FileMode.Open, FileAccess.Read);
-
+            var file = new FileStream(_hostsFileAccess.GetFileName(), FileMode.Open, FileAccess.Read);
             var writer = new StreamWriter(file, Encoding.Default);
 
             writer.Write(fileToWrite);
@@ -33,10 +47,7 @@ namespace Simple.HostsManager
 
         public void RemoveLine(string lineToDelete)
         {
-            var hostsFileAccess = new HostsFileAccess();
-
-            var file = new FileStream(hostsFileAccess.GetFileName(), FileMode.Open, FileAccess.Read);
-
+            var file = new FileStream(_hostsFileAccess.GetFileName(), FileMode.Open, FileAccess.Read);
             var reader = new StreamReader(file, Encoding.Default);
 
 			string line;
@@ -51,7 +62,7 @@ namespace Simple.HostsManager
                 newHostsFile += Environment.NewLine;
             }
 
-
+            WriteHostsFile(newHostsFile);
         }
     }
 }

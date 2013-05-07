@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Simple.HostsManager
 {
@@ -14,38 +15,60 @@ namespace Simple.HostsManager
 
     public class HostsContext : IHostsContext
     {
+        private readonly HostsFileWriter _hostsFileWriter;
+        private readonly HostsFileToObjectConverter _hostsFileToObjectConverter;
+        private readonly HostsFileRetriever _hostsFileRetriever;
+
+        public HostsContext()
+        {
+            _hostsFileWriter = new HostsFileWriter();
+            _hostsFileToObjectConverter = new HostsFileToObjectConverter();
+            _hostsFileRetriever = new HostsFileRetriever();
+        }
+
         public List<HostsEntry> All()
         {
-            var hostsFileToObject = new HostsFileToObjectConverter();
-            var hostsFileRetriever = new HostsFileRetriever();
-            var lines = hostsFileRetriever.GetHostsByLine();
+            var lines = _hostsFileRetriever.GetHostsByLine();
 
-            return lines.Select(hostsFileToObject.FromString).Where(x=> x.IsValid()) as List<HostsEntry>;
+            return lines.Select(_hostsFileToObjectConverter.FromString).Where(x => x.IsValid()) as List<HostsEntry>;
         }
 
         public void Add(HostsEntry hostsEntry)
         {
-            throw new System.NotImplementedException();
+            _hostsFileWriter.AppendLine(hostsEntry);
         }
 
         public void Add(string hostName, string ipAddress)
         {
-            throw new System.NotImplementedException();
+            var hostEntry = new HostsEntry
+                {
+                    HostNames = new List<string> { hostName },
+                    IpAddress = IPAddress.Parse(ipAddress)
+                };
+
+            _hostsFileWriter.AppendLine(hostEntry);
         }
 
         public void Add(string hostName, string ipAddress, string comment = "")
         {
-            throw new System.NotImplementedException();
+            var hostEntry = new HostsEntry
+            {
+                HostNames = new List<string> { hostName },
+                IpAddress = IPAddress.Parse(ipAddress),
+                Comment = comment
+            };
+
+            _hostsFileWriter.AppendLine(hostEntry);
         }
 
         public void RemoveByHostName(string hostName)
         {
-            throw new System.NotImplementedException();
+            _hostsFileWriter.RemoveLine(hostName);
         }
 
         public void Remove(HostsEntry hostsEntry)
         {
-            throw new System.NotImplementedException();
+            _hostsFileWriter.RemoveLine(_hostsFileToObjectConverter.ToString(hostsEntry));
         }
     }
 }
